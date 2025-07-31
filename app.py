@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
 import os, json
 from datetime import datetime
+import db_manager  # Importamos todo el módulo
 
 app = Flask(__name__)
 app.secret_key = 'hotel_dorado_123'
@@ -10,19 +11,12 @@ CLAVE_VALIDA = "1234"
 
 JSON_FILE = 'reservas.json'
 
-# Cargar reservas desde JSON
-def cargar_reservas():
-    if os.path.exists(JSON_FILE):
-        with open(JSON_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return []
-
-# Guardar nueva reserva en JSON
-def guardar_reserva(data):
-    reservas = cargar_reservas()
-    reservas.append(data)
-    with open(JSON_FILE, 'w', encoding='utf-8') as f:
-        json.dump(reservas, f, ensure_ascii=False, indent=4)
+# Esta función ya no se necesita si usarás solo base de datos
+# def cargar_reservas():
+#     if os.path.exists(JSON_FILE):
+#         with open(JSON_FILE, 'r', encoding='utf-8') as f:
+#             return json.load(f)
+#     return []
 
 @app.route('/habitaciones')
 def habitaciones():
@@ -39,8 +33,8 @@ def formulario():
 @app.route('/guardar_reserva', methods=['POST'])
 def guardar():
     data = request.get_json()
-    guardar_reserva(data)
-    return 'Reserva registrada con exito'
+    db_manager.guardar_reserva_db(data)  # Llamado explícito desde el módulo
+    return 'Reserva registrada con éxito'
 
 @app.route('/admin')
 def login():
@@ -51,7 +45,7 @@ def validar_login():
     if request.form['usuario'] == USUARIO_VALIDO and request.form['clave'] == CLAVE_VALIDA:
         session['usuario'] = request.form['usuario']
         return redirect('/sistema')
-    return render_template('login.html', error="Usuario o clave invalida")
+    return render_template('login.html', error="Usuario o clave inválida")
 
 @app.route('/sistema')
 def sistema():
@@ -65,19 +59,18 @@ def buscar():
         return redirect('/admin')
     return render_template('buscar.html')
 
+@app.route('/todas_reservas')
+def todas_reservas():
+    reservas = db_manager.cargar_reservas_db()
+    return jsonify(reservas)
+
 @app.route('/buscar_reservas', methods=['POST'])
 def buscar_reservas():
-    fechas = request.get_json()
-    reservas = cargar_reservas()
-
-    fecha_inicio = datetime.strptime(fechas['inicio'], '%Y-%m-%d')
-    fecha_fin = datetime.strptime(fechas['fin'], '%Y-%m-%d')
-
-    filtradas = [
-        r for r in reservas
-        if fecha_inicio <= datetime.strptime(r['fecha'], '%Y-%m-%d') <= fecha_fin
-    ]
-    return jsonify(filtradas)
+    datos = request.get_json()
+    inicio = datos['inicio']
+    fin = datos['fin']
+    reservas = db_manager.buscar_reservas_por_fecha(inicio, fin)
+    return jsonify(reservas)
 
 @app.route('/logout')
 def logout():
