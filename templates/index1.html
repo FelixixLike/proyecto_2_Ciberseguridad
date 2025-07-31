@@ -1,0 +1,23 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Administrativo - Hotel Dorado</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo1.css') }}">
+</head>
+<body>
+  <h1>Bienvenido, Administrador</h1>
+
+  <nav>
+    <ul>
+      <li><a href="/buscar">Buscar Reservas</a></li>
+      <li><a href="/logout">Cerrar sesion</a></li>
+    </ul>
+  </nav>
+
+  <section>
+    <p>Este es el panel administrativo. Aqui puedes consultar las reservas realizadas por los clientes.</p>
+  </section>
+</body>
+</html>

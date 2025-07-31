@@ -1,0 +1,61 @@
+[
+    {
+        "nombre": "NELSY CAROLINA CANTOR GALINDO",
+        "correo": "nelsycarolina@gmail.com",
+        "fecha": "2025-07-07",
+        "noches": "2",
+        "habitacion": "Suite Junior - $250.000",
+        "precio": 250000,
+        "total": 500000
+    },
+    {
+        "nombre": "MARCO TULIO CANTOR GALINDO",
+        "correo": "marcotulio@gmail.com",
+        "fecha": "2025-07-23",
+        "fecha_salida": "2025-07-31",
+        "noches": 8,
+        "habitacion": "Suite Ejecutiva - $400.000",
+        "precio": 400000,
+        "total": 3200000
+    },
+    {
+        "nombre": "ruda ",
+        "correo": "123ivan@gmail.com",
+        "fecha": "2025-07-30",
+        "fecha_salida": "2025-07-31",
+        "noches": 1,
+        "habitacion": "Est?ndar - $150.000",
+        "precio": 150000,
+        "total": 150000
+    },
+    {
+        "nombre": "maria antonieta",
+        "correo": "fdffd@gamil.cmo",
+        "fecha": "2025-07-22",
+        "fecha_salida": "2025-07-23",
+        "noches": 1,
+        "habitacion": "Suite Ejecutiva - $400.000",
+        "precio": 400000,
+        "total": 400000
+    },
+    {
+        "nombre": "andres",
+        "correo": "andres@gmail.com",
+        "fecha": "2025-07-30",
+        "fecha_salida": "2025-08-02",
+        "noches": 3,
+        "habitacion": "Suite Junior - $250.000",
+        "precio": 250000,
+        "total": 750000
+    },
+    {
+        "nombre": "jose antonieta",
+        "correo": "fdffd@gamil.cmo",
+        "fecha": "2025-07-31",
+        "fecha_salida": "2025-08-02",
+        "noches": 2,
+        "habitacion": "Suite Junior - $250.000",
+        "precio": 250000,
+        "total": 500000
+    }
+]

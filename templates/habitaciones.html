@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Habitaciones - Hotel Dorado</title>
+    <link rel="icon" href="{{ url_for('static', filename='image/logo.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo1.css') }}">
+</head>
+<body>
+    <header>
+        <div class="caja1">
+            <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo Hotel" width="100" height="100">
+            <h1>HOTEL DORADO</h1>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/habitaciones">Habitaciones</a></li>
+            <li><a href="/contacto">Contacto</a></li>
+            <li><a href="/buscar">Ingresar</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Habitaciones</h2>
+        <section>
+            <h3>Estandar - $150.000</h3>
+            <p>Habitacion comoda con cama doble, bano privado, TV y WiFi.</p>
+        </section>
+        <section>
+            <h3>Suite Junior - $250.000</h3>
+            <p>Habitacion amplia con cama queen, sala pequena, bano privado, TV, WiFi y minibar.</p>
+        </section>
+        <section>
+            <h3>Suite Ejecutiva - $400.000</h3>
+            <p>Suite de lujo con cama king, sala de estar, bano privado, jacuzzi, TV, WiFi, minibar y balcon.</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Hotel Dorado. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Busqueda de Reservas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #fffbe6, #fdf5d1);
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #bfa136;
+      margin-bottom: 20px;
+    }
+
+    input[type="date"],
+    button {
+      padding: 10px;
+      margin: 10px 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #bfa136;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #9c8824;
+    }
+
+    table {
+      width: 90%;
+      max-width: 800px;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background-color: white;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #bfa136;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead tr {
+        display: none;
+      }
+      td {
+        padding: 10px;
+        position: relative;
+        text-align: right;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Buscar Reservas por Fecha</h2>
+
+  <input type="date" id="inicio">
+  <input type="date" id="fin">
+  <button onclick="buscar()">Buscar</button>
+
+  <table id="tabla">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Fecha</th>
+        <th>Noches</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function buscar() {
+      const inicio = document.getElementById("inicio").value;
+      const fin = document.getElementById("fin").value;
+
+      if (!inicio || !fin) {
+        alert("Por favor selecciona ambas fechas.");
+        return;
+      }
+
+      const res = await fetch('/buscar_reservas', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ inicio, fin })
+      });
+
+      const data = await res.json();
+      const tbody = document.querySelector("#tabla tbody");
+      tbody.innerHTML = "";
+
+      if (data.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:gray;'>No se encontraron reservas en ese rango de fechas.</td></tr>";
+        return;
+      }
+
+      data.forEach(r => {
+        const row = `<tr>
+          <td data-label='Nombre'>${r.nombre}</td>
+          <td data-label='Correo'>${r.correo}</td>
+          <td data-label='Fecha'>${r.fecha}</td>
+          <td data-label='Noches'>${r.noches}</td>
+          <td data-label='Total'>$${r.total.toLocaleString('es-CO')}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+  </script>
+</body>
+</html>
