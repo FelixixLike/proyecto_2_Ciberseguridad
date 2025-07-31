@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>H.Dorado</title>
   <link rel="icon" href="{{ url_for('static', filename='image/logo.png') }}" type="image/png">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo1.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
 </head>
 
 <body>
@@ -17,39 +17,36 @@
   </header>
 
   <!-- NAV -->
-  <nav>
-    <ul>
-      <li><a href="/">Inicio</a></li>
-      <li><a href="/habitaciones">Habitaciones</a></li>
-      <li><a href="/contacto">Contacto</a></li>
-      <li><a href="/buscar">Ingresar</a></li>
-    </ul>
-  </nav>
+<!-- NAV -->
+<nav>
+  <ul>
+    <li><a href="/formulario">Hacer una reserva</a></li>
+    <li><a href="/ver_reservas">Ver tus reservas</a></li>
+    <li><a href="/logout">Cerrar sesión</a></li>
+  </ul>
+</nav>
+
 
   <h2>Formulario de Reserva</h2>
 
-  <form id="reservaForm">
-    <label for="nombre">Nombre completo:</label>
-    <input type="text" name="nombre" required>
+ <form id="reservaForm">
+  <label for="fechaIngreso">Fecha de ingreso:</label>
+  <input type="date" name="fechaIngreso" required>
 
-    <label for="correo">Correo electrónico:</label>
-    <input type="email" name="correo" required>
+  <label for="fechaSalida">Fecha de salida:</label>
+  <input type="date" name="fechaSalida" required>
 
-    <label for="fechaIngreso">Fecha de ingreso:</label>
-    <input type="date" name="fechaIngreso" required>
+  <label for="habitacion">Tipo de habitación:</label>
+  <select name="habitacion" required>
+    <option value="150000">Estándar - $150.000</option>
+    <option value="250000">Suite Junior - $250.000</option>
+    <option value="400000">Suite Ejecutiva - $400.000</option>
+  </select>
 
-    <label for="fechaSalida">Fecha de salida:</label>
-    <input type="date" name="fechaSalida" required>
+  <button type="submit">Reservar</button>
+</form>
 
-    <label for="habitacion">Tipo de habitación:</label>
-    <select name="habitacion" required>
-      <option value="150000">Estándar - $150.000</option>
-      <option value="250000">Suite Junior - $250.000</option>
-      <option value="400000">Suite Ejecutiva - $400.000</option>
-    </select>
 
-    <button type="submit">Reservar</button>
-  </form>
 
   <p id="mensaje"></p>
 

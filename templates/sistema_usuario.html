@@ -1,0 +1,24 @@
+<!-- templates/usuario.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Usuario - Hotel Dorado</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body>
+  <h1>Bienvenido, {{ session['usuario'] }}</h1>
+
+  <nav>
+    <ul>
+      <li><a href="/formulario">Hacer una reserva</a></li>
+      <li><a href="/ver_reservas">Ver tus reservas</a></li>
+      <li><a href="/logout">Cerrar sesión</a></li>
+    </ul>
+  </nav>
+
+  <section>
+    <p>Selecciona una opción del menú para continuar.</p>
+  </section>
+</body>
+</html>

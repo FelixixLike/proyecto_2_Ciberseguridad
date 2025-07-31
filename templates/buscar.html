@@ -7,24 +7,34 @@
 </head>
 <body>
 
-  <h2>Buscar Reservas por Fecha</h2>
+  <h2>Buscar Reservas por Rango de Fechas</h2>
 
-  <input type="date" id="inicio">
-  <input type="date" id="fin">
+
+<label for="inicio">Desde:</label>
+<input type="date" id="inicio">
+<label for="fin">Hasta:</label>
+<input type="date" id="fin">
   <button onclick="buscar()">Buscar</button>
 
-  <table id="tabla">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Correo</th>
-        <th>Fecha</th>
-        <th>Noches</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<table id="tabla">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Correo</th>
+      <th>Fecha Ingreso</th>
+      <th>Fecha Salida</th>
+      <th>Habitación</th>
+      <th>Noches</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+
+  <!-- Botón para retroceder al panel administrativo -->
+  <br><br>
+  <button onclick="window.location.href='/sistema_admin'">Volver al Panel</button>
 
   <script src="{{ url_for('static', filename='js/buscar.js') }}"></script>
 </body>

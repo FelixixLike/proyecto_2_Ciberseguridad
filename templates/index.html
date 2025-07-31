@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <title>H.Dorado</title>
   <link rel="icon" href="{{ url_for('static', filename='image/logo.png') }}" type="image/png">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo1.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+  
 </head>
 <body>
 
@@ -22,7 +23,8 @@
       <li><a href="/">Inicio</a></li>
       <li><a href="/habitaciones">Habitaciones</a></li>
       <li><a href="/contacto">Contacto</a></li>
-      <li><a href="/buscar">Ingresar</a></li>
+      <li><a href="/login">Iniciar sesión</a></li>
+      </li>
     </ul>
   </nav>
 
@@ -30,7 +32,7 @@
   <main>
     <section>
       <h2>Simulador de reservas</h2>
-      <p>Haz clic en una habitacion libre para reservarla:</p>
+      <p>Haz clic en una habitación libre para reservarla:</p>
       <div id="habitaciones-container" class="habitaciones"></div>
     </section>
   </main>
@@ -40,16 +42,16 @@
     <div class="footer-top">
       <div class="footer-box sede">
         <h3>Nuestra Sede</h3>
-        <p>Direccion: Calle 123 #45-67<br>Ciudad: Bogota<br>Horario: 8:00 a.m. - 6:00 p.m.</p>
+        <p>Dirección: Calle 123 #45-67<br>Ciudad: Bogotá<br>Horario: 8:00 a.m. - 6:00 p.m.</p>
       </div>
 
       <div class="footer-box contacto">
         <h3>Contacto</h3>
         <p>Tel: +57 320 000 0000
           <br>
-           Correo: info@hoteldorado.com
-           <br>
-           Sitio Web: www.hoteldorado.com
+          Correo: info@hoteldorado.com
+          <br>
+          Sitio Web: www.hoteldorado.com
         </p>
         <div class="redes">
           <a href="#">Facebook</a> |

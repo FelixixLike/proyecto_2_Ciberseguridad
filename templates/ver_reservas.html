@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Reservas - Hotel Dorado</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ver_reservas.css') }}">
+</head>
+<body>
+    <h2>Mis Reservas</h2>
+    <a href="/sistema_usuario">← Volver al panel</a> <!-- ✅ Este es el fix clave -->
+
+    {% if reservas %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Fecha de Reserva</th>
+                    <th>Ingreso</th>
+                    <th>Salida</th>
+                    <th>Tipo de Habitación</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservas %}
+                    <tr>
+                        <td>{{ r.fecha_reserva }}</td>
+                        <td>{{ r.fecha_ingreso }}</td>
+                        <td>{{ r.fecha_salida }}</td>
+                        <td>{{ r.tipo_habitacion }}</td>
+                        <td>${{ r.precio }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No tienes reservas registradas.</p>
+    {% endif %}
+</body>
+</html>

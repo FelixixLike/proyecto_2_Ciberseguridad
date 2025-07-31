@@ -2,96 +2,70 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Login Administrador - Hotel Dorado</title>
+  <title>Login - Hotel Dorado</title>
   <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/png">
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #fff8dc, #f4e2d8);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .login-box {
-      background-color: white;
-      border-radius: 12px;
-      padding: 30px 40px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    h2 {
-      color: #bfa136;
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      text-align: left;
-      font-weight: bold;
-      margin-top: 15px;
-      color: #333;
-    }
-
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-
-    button {
-      background-color: #bfa136;
-      color: white;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      padding: 12px 20px;
-      margin-top: 25px;
-      cursor: pointer;
-      width: 100%;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #9c8824;
-    }
-
-    p.error {
-      color: red;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+ 
 </head>
 <body>
 
-  <div class="login-box">
-    <h2>Ingreso Administrador</h2>
+  <!-- Selector de tipo de ingreso -->
+  <div class="login-selector" id="selector">
+    <h2>¿Cómo deseas ingresar?</h2>
+    <button class="selector-btn" onclick="mostrarFormulario('usuario')">Ingresar como Usuario</button>
+    <button class="selector-btn" onclick="mostrarFormulario('admin')">Ingresar como Administrador</button>
+    <a class="volver-inicio" href="/">← Volver al inicio</a>
+  </div>
+
+  <!-- Formulario de login -->
+  <div class="login-box" id="login-box">
+    <h2 id="titulo-formulario">Ingreso</h2>
 
     {% if error %}
       <p class="error">{{ error }}</p>
     {% endif %}
 
-    <form method="POST" action="/validar_login">
-      <label for="usuario">Usuario:</label>
-      <input type="text" id="usuario" name="usuario" required>
+    <form action="/validar_login" method="POST">
+      <input type="hidden" name="rol" id="rolInput">
 
-      <label for="clave">Contrasena:</label>
-      <input type="password" id="clave" name="clave" required>
+      <label for="usuario">Usuario:</label><br>
+      <input type="text" name="usuario" required><br><br>
+
+      <label for="password">Contraseña:</label><br>
+      <input type="password" name="password" required><br><br>
 
       <button type="submit">Ingresar</button>
     </form>
+
+    <!-- Crear cuenta solo si es usuario -->
+    <p>¿No tienes cuenta? <a href="/registro">Regístrate aquí</a></p>
+
+    
+    <!-- Botón para volver a elegir tipo de login -->
+    <button class="volver-btn" onclick="volverSelector()">← Elegir otro tipo de ingreso</button>
   </div>
+
+  <script>
+    function mostrarFormulario(rol) {
+      document.getElementById('selector').style.display = 'none';
+      document.getElementById('login-box').style.display = 'block';
+
+      document.getElementById('rolInput').value = rol;
+
+      if (rol === 'usuario') {
+        document.getElementById('titulo-formulario').innerText = 'Ingreso de Usuario';
+        document.getElementById('crearUsuarioBtn').style.display = 'block';
+      } else {
+        document.getElementById('titulo-formulario').innerText = 'Ingreso de Administrador';
+        document.getElementById('crearUsuarioBtn').style.display = 'none';
+      }
+    }
+
+    function volverSelector() {
+      document.getElementById('login-box').style.display = 'none';
+      document.getElementById('selector').style.display = 'block';
+    }
+  </script>
 
 </body>
 </html>
