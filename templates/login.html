@@ -46,27 +46,8 @@
     <button class="volver-btn" onclick="volverSelector()">← Elegir otro tipo de ingreso</button>
   </div>
 
-  <script>
-    function mostrarFormulario(rol) {
-      document.getElementById('selector').style.display = 'none';
-      document.getElementById('login-box').style.display = 'block';
-      document.getElementById('rolInput').value = rol;
+<script src="{{ url_for('static', filename='js/login.js') }}" defer></script>
 
-      // Cambiar el título del formulario según el rol
-      const titulo = document.getElementById('titulo-formulario');
-      titulo.textContent = rol === 'admin' ? 'Ingreso Administrador' : 'Ingreso Usuario';
-
-      // Mostrar enlace de registro solo para usuarios
-      const registroLink = document.getElementById('registro-link');
-      registroLink.style.display = rol === 'usuario' ? 'block' : 'none';
-    }
-
-    function volverSelector() {
-      document.getElementById('selector').style.display = 'block';
-      document.getElementById('login-box').style.display = 'none';
-      document.getElementById('rolInput').value = '';
-    }
-  </script>
 
 </body>
 </html>
