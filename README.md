@@ -5,7 +5,7 @@ Se aplicaron buenas prácticas de seguridad, cifrado, autenticación y protecci�
 
 ## Integrantes:
 * Andrés Felipe Martínez González (x_L)
-*Janer Andrey Piñeros Arana
+* Janer Andrey Piñeros Arana
 
 ---
 
