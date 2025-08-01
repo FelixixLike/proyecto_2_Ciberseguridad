@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, jsonify
 from datetime import datetime
 import db_manager  # Importamos todo el módulo
 import bcrypt
+import pyotp
 
 app = Flask(__name__)
 app.secret_key = 'hotel_dorado_123'  # Cambia esto por una clave segura en producción
@@ -127,6 +128,7 @@ def guardar_reserva():
 def validar_login():
     correo = request.form['correo']
     password = request.form['password']
+    rol = request.form['rol']
 
     conn = db_manager.obtener_conexion()
     cursor = conn.cursor(dictionary=True)
@@ -138,24 +140,29 @@ def validar_login():
     conn.close()
 
     if usuario and bcrypt.checkpw(password.encode('utf-8'), usuario['password'].encode('utf-8')):
-        # Guardamos los datos necesarios en sesión
+        if usuario['rol'] != rol:
+            return render_template('login.html', error='Tipo de ingreso incorrecto para este usuario')
+
+        # ✅ Si es admin, pasamos a verificar MFA
+        if usuario['rol'] == 'admin':
+            session['mfa_pending'] = usuario['correo']
+            return redirect('/verificar_2fa')
+
+        # ✅ Si es usuario común
         session['correo'] = usuario['correo']
         session['usuario'] = usuario['usuario']
         session['rol'] = usuario['rol']
 
-        # 🔔 Enviar correo de inicio de sesión
+        # Enviar correo de inicio de sesión
         try:
             db_manager.enviar_correo_inicio_sesion(correo)
         except Exception as e:
             print("Error al enviar correo de inicio de sesión:", e)
 
-        # Redirigir al panel correspondiente según el rol
-        if usuario['rol'] == 'admin':
-            return redirect('/sistema_admin')
-        else:
-            return redirect('/formulario')
+        return redirect('/formulario')
     else:
         return render_template('login.html', error='Correo o contraseña incorrectos')
+
 
 
 
@@ -225,6 +232,42 @@ def ver_reservas():
 def logout():
     session.clear()
     return redirect('/')
+
+@app.route('/verificar_2fa', methods=['GET', 'POST'])
+def verificar_2fa():
+    if 'mfa_pending' not in session:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        codigo = request.form['codigo']
+        correo = session['mfa_pending']
+
+        conn = db_manager.obtener_conexion()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM usuarios WHERE correo = %s", (correo,))
+        usuario = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if not usuario:
+            return render_template('verificar_2fa.html', error="Usuario no encontrado.")
+        
+        if not usuario.get('mfa_secret'):
+            return render_template('verificar_2fa.html', error="Este usuario no tiene configurado 2FA.")
+
+        totp = pyotp.TOTP(usuario['mfa_secret'])
+
+        if totp.verify(codigo, valid_window=1):  # margen de 30s
+            session['correo'] = usuario['correo']
+            session['usuario'] = usuario['usuario']
+            session['rol'] = usuario['rol']
+            session.pop('mfa_pending', None)
+            return redirect('/sistema_admin')
+        else:
+            return render_template('verificar_2fa.html', error="Código incorrecto.")
+
+    return render_template('verificar_2fa.html')
+
 
 
 if __name__ == '__main__':

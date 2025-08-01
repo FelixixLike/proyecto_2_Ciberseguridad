@@ -1,0 +1,23 @@
+<!-- templates/verificar_2fa.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificación 2FA - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/verificar_2fa.css') }}">
+
+</head>
+<body>
+    <h2>Verificación en Dos Pasos</h2>
+    <p>Introduce el código de tu app :</p>
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <input type="text" name="codigo" placeholder="Código 2FA" required>
+        <button type="submit">Verificar</button>
+    </form>
+</body>
+</html>
