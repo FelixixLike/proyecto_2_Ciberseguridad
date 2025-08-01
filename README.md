@@ -3,9 +3,9 @@
 Proyecto final del módulo de **Ciberseguridad - Nivel Básico** de la plataforma [TalentoCUN](https://talentocun.tech/talentocun/index.php), en el que transformamos una aplicación web básica en una solución **segura y funcional** para la gestión de reservas hoteleras.
 Se aplicaron buenas prácticas de seguridad, cifrado, autenticación y protección de datos tanto en frontend como en backend.
 
-Integrantes:
-Andrés Felipe Martínez González (x_L)
-Janer Andrey Piñeros Arana
+## Integrantes:
+* Andrés Felipe Martínez González (x_L)
+* Janer Andrey Piñeros Arana
 
 ---
 
