@@ -1,64 +1,125 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding-top: 40px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #f4f4f4;
+  background-image: url("../image/hotel.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover; /* Opcional: asegura que la imagen cubra toda el área */
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      text-align: center;
-      margin-top: 80px;
-    }
 
-    .login-selector, .login-box {
-      background: white;
-      border-radius: 10px;
-      padding: 30px;
-      width: 300px;
-      margin: 0 auto;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-    }
+.login-selector,
+.login-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px 35px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
 
-    .selector-btn, .volver-btn {
-      margin: 10px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 6px;
-      background-color: #007bff;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
+.selector-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
+}
 
-    .selector-btn:hover, .volver-btn:hover {
-      background-color: #0056b3;
-    }
+.selector-btn {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #0074d9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
 
-    .login-box {
-      display: none;
-    }
+.selector-btn:hover {
+  background-color: #005fa3;
+}
 
-    .error {
-      color: red;
-      font-weight: bold;
-    }
+.volver-container {
+  margin-top: 30px;
+}
 
-    .crear-cuenta {
-      margin-top: 15px;
-      display: block;
-      text-decoration: none;
-      color: #007bff;
-      font-weight: bold;
-    }
+.volver-inicio {
+  display: inline-block;
+  color: #0074d9;
+  text-decoration: none;
+  font-weight: bold;
+}
 
-    .crear-cuenta:hover {
-      text-decoration: underline;
-    }
+.volver-inicio:hover {
+  text-decoration: underline;
+}
 
-    .volver-inicio {
-      display: block;
-      margin-top: 15px;
-      text-decoration: none;
-      color: #dc3545;
-      font-weight: bold;
-    }
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+}
 
-    .volver-inicio:hover {
-      text-decoration: underline;
-    }
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #0074d9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #005fa3;
+}
+
+.volver-btn {
+  margin-top: 20px;
+  background-color: #ccc;
+  color: #000;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+.mensaje {
+  color: green;
+  font-weight: bold;
+}
+
+.requisitos-box {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 10px 15px;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.requisitos-box p {
+  margin: 6px 0;
+  font-size: 14px;
+}

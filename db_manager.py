@@ -4,52 +4,84 @@ from flask import Flask, render_template, request, redirect, session, jsonify
 import mysql.connector
 from datetime import datetime
 import traceback  # Agregado para debug
+from email.message import EmailMessage # Agregado para enviar correos
+import re, bcrypt
+import smtplib
+
+
+def validar_password(password):
+    tiene_longitud = len(password) >= 8
+    tiene_numeros = len(re.findall(r"\d", password)) >= 2
+    tiene_simbolos = re.search(r"[!@#$%^&*(),.?\":{}|<>_\-+=/\\[\]]", password) is not None
+    tiene_mayusculas = re.search(r"[A-Z]", password) is not None
+    tiene_minusculas = re.search(r"[a-z]", password) is not None
+
+    return all([tiene_longitud, tiene_numeros, tiene_simbolos, tiene_mayusculas, tiene_minusculas])
 
 
 def obtener_conexion():
     return mysql.connector.connect(
         host='localhost',
-        user='root',         # Cambia si tu usuario es diferente
-        password='',         # Pon tu contraseña si tienes
-        database='hotel'     # El nombre de tu base de datos
+        user='root',         
+        password='',         
+        database='hotel'     
     )
 
+def validar_password(password):
+    tiene_longitud = len(password) >= 8
+    tiene_numeros = len(re.findall(r"\d", password)) >= 2
+    tiene_simbolos = re.search(r"[!@#$%^&*(),.?\":{}|<>_\-+=/\\[\]]", password) is not None
+    tiene_mayusculas = re.search(r"[A-Z]", password) is not None
+    tiene_minusculas = re.search(r"[a-z]", password) is not None
+    return all([tiene_longitud, tiene_numeros, tiene_simbolos, tiene_mayusculas, tiene_minusculas])
 
+def enviar_correo_bienvenida(destinatario, usuario):
+    msg = EmailMessage()
+    msg.set_content(f"¡Bienvenido {usuario}! Tu registro fue exitoso en el sistema Hotel Dorado.")
+    msg['Subject'] = 'Registro exitoso'
+    msg['From'] = 'correo@gmail.com'
+    msg['To'] = destinatario
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login('correo@gmail.com', '####')  # contraseña de aplicación sin espacios
+            smtp.send_message(msg)
+    except Exception as e:
+        print("Error al enviar el correo:", e)
+
+def enviar_correo_inicio_sesion(destinatario):
+    msg = EmailMessage()
+    msg.set_content("Hola, se ha iniciado sesión en tu cuenta del Hotel Dorado.")
+    msg['Subject'] = 'Inicio de sesión detectado'
+    msg['From'] = 'correo@gmail.com'
+    msg['To'] = destinatario
+
+    # Usar SMTP seguro de Gmail
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login('correo@gmail.com', '####')  # Usa tu contraseña de aplicación aquí
+        smtp.send_message(msg)
 
 def guardar_reserva_db(data):
-    try:
-        conn = obtener_conexion()
-        cursor = conn.cursor()
+    conn = obtener_conexion()
+    cursor = conn.cursor()
 
-        # Fecha de reserva actual
-        fecha_reserva = datetime.now().strftime('%Y-%m-%d')
+    cursor.execute("""
+        INSERT INTO reservas (fecha_ingreso, fecha_salida, tipo_habitacion, precio, correo_usuario, noches)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (
+        data['fecha_ingreso'],
+        data['fecha_salida'],
+        data['tipo_habitacion'],
+        data['precio'],
+        data['correo_usuario'],
+        data['noches']  # 👈 nuevo campo
+    ))
 
-        sql = """INSERT INTO reservas (id_usuario, fecha_ingreso, fecha_salida, tipo_habitacion, precio, fecha_reserva)
-                 VALUES (%s, %s, %s, %s, %s, %s)"""
-        valores = (
-            data['id_usuario'],
-            data['fecha_ingreso'],
-            data['fecha_salida'],
-            data['tipo_habitacion'],
-            data['precio'],
-            fecha_reserva
-        )
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-        print("Ejecutando SQL:", sql)
-        print("Con valores:", valores)
 
-        cursor.execute(sql, valores)
-        conn.commit()
-        print("Reserva insertada correctamente")
-
-    except Exception as e:
-        print("Error al insertar reserva:", e)
-        traceback.print_exc()
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
 
 
 def cargar_reservas_db():
@@ -65,14 +97,14 @@ def buscar_reservas_por_fecha(inicio, fin):
     conn = obtener_conexion()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT u.usuario AS nombre, r.fecha_ingreso, r.fecha_salida, r.tipo_habitacion, r.precio, r.fecha_reserva
+        SELECT u.usuario AS nombre, r.fecha_ingreso, r.fecha_salida, 
+               r.tipo_habitacion, r.precio, r.fecha_reserva
         FROM reservas r
-        JOIN usuarios u ON r.id_usuario = u.id
+        JOIN usuarios u ON r.correo_usuario = u.correo
         WHERE r.fecha_reserva BETWEEN %s AND %s
-        ORDER BY r.fecha_reserva DESC
     """, (inicio, fin))
-    reservas = cursor.fetchall()
-    cursor.close()
+    resultados = cursor.fetchall()
     conn.close()
-    return reservas
+    return resultados
+
 

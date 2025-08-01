@@ -1,13 +1,58 @@
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+/* static/css/ver_reservas.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+    color: #333;
 }
-th, td {
-    padding: 10px;
-    border: 1px solid #ccc;
+
+h2 {
     text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
 }
+
+a {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+table {
+    width: 90%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
 th {
-    background-color: #f4f4f4;
+    background-color: #2980b9;
+    color: white;
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+p {
+    text-align: center;
+    font-size: 1.1em;
+    color: #7f8c8d;
 }

@@ -13,12 +13,15 @@ document.getElementById("reservaForm").addEventListener("submit", async function
     return;
   }
 
-  // Datos de la reserva (el id_usuario lo agrega el backend desde la sesión)
+  const noches = Math.ceil((salida - ingreso) / (1000 * 60 * 60 * 24));  // 👈 ¡esta línea es clave!
+
+  // Datos de la reserva
   const data = {
     fecha_ingreso: form.fechaIngreso.value,
     fecha_salida: form.fechaSalida.value,
     tipo_habitacion: form.habitacion.options[form.habitacion.selectedIndex].text,
-    precio: precio
+    precio: precio,
+    noches: noches
   };
 
   try {

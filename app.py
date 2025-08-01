@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
-import os, json
 from datetime import datetime
 import db_manager  # Importamos todo el módulo
 import bcrypt
@@ -33,66 +32,51 @@ def formulario():
 @app.route('/login')
 def mostrar_login():
     return render_template('login.html')
+
+
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'GET':
         return render_template('registro.html')
-    
+
     usuario = request.form['usuario']
+    correo = request.form['correo']
     password = request.form['password']
-    rol = request.form['rol']  # Será "usuario"
+    rol = request.form['rol']
+
+    if not db_manager.validar_password(password):
+        return render_template("registro.html", error="La contraseña no cumple con los requisitos.")
 
     conexion = db_manager.obtener_conexion()
     cursor = conexion.cursor()
 
-    # Verificar si ya existe
-    cursor.execute("SELECT * FROM usuarios WHERE usuario = %s", (usuario,))
+    # Validar solo si el correo ya está registrado
+    cursor.execute("SELECT * FROM usuarios WHERE correo = %s", (correo,))
     existente = cursor.fetchone()
 
     if existente:
         conexion.close()
-        return render_template("registro.html", error="El nombre de usuario ya existe.")
+        return render_template("registro.html", error="El correo ya está registrado.")
 
-    # Cifrar contraseña
     hash_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    cursor.execute("INSERT INTO usuarios (usuario, password, rol, creado_en) VALUES (%s, %s, %s, NOW())",
-                   (usuario, hash_password.decode('utf-8'), rol))
+
+    cursor.execute("""
+        INSERT INTO usuarios (usuario, correo, password, rol, creado_en)
+        VALUES (%s, %s, %s, %s, NOW())
+    """, (usuario, correo, hash_password.decode('utf-8'), rol))
+
     conexion.commit()
     conexion.close()
 
-    return render_template("registro.html", mensaje="Usuario creado correctamente. Ahora puedes iniciar sesión.")
+    # Enviar correo de bienvenida
+    try:
+        db_manager.enviar_correo_bienvenida(correo, usuario)
+    except Exception as e:
+        print("Error al enviar correo:", e)
+
+    return render_template("registro.html", mensaje="Usuario creado correctamente. Revisa tu correo.")
 
 
-@app.route('/validar_login', methods=['POST'])
-def validar_login():
-    usuario = request.form['usuario']
-    password = request.form['password']
-    rol = request.form['rol']
-
-    conexion = db_manager.obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
-
-    cursor.execute("SELECT * FROM usuarios WHERE usuario = %s AND rol = %s", (usuario, rol))
-
-    usuario_encontrado = cursor.fetchone()
-    conexion.close()
-
-    if usuario_encontrado:
-        hash_guardado = usuario_encontrado['password']
-        if bcrypt.checkpw(password.encode('utf-8'), hash_guardado.encode('utf-8')):
-            # Guardar sesión
-            session['usuario'] = usuario
-            session['rol'] = rol
-            session['id_usuario'] = usuario_encontrado['id']  
-
-            if rol == 'admin':
-                return redirect('/sistema_admin')
-            elif rol == 'usuario':
-                return redirect('/sistema_usuario')
-        else:
-            return render_template("login.html", error="Contraseña incorrecta")
-    else:
-        return render_template("login.html", error="Usuario no encontrado")
 
 # Paneles según rol
 @app.route('/sistema_admin')
@@ -124,47 +108,56 @@ def buscar():
 
 @app.route('/guardar_reserva', methods=['POST'])
 def guardar_reserva():
-
-    print("Sesión actual:", session) 
-
-    if 'id_usuario' not in session:
+    if 'correo' not in session:
         return jsonify({'error': 'Usuario no autenticado'}), 401
 
     try:
         data = request.get_json()
-        data['id_usuario'] = session['id_usuario']  # ✅ Seguridad: se toma del backend
+        data['correo_usuario'] = session['correo']  # 👈 usar correo como referencia
 
-        db_manager.guardar_reserva_db(data)  # Tu función de base de datos
+        db_manager.guardar_reserva_db(data)
         return jsonify({'mensaje': 'Reserva guardada exitosamente'})
     except Exception as e:
         print("Error al guardar reserva:", e)
         return jsonify({'error': 'Ocurrió un error al guardar la reserva'}), 500
 
 
-@app.route('/ver_reservas')
-def ver_reservas():
-    if 'id_usuario' not in session:
-        return redirect('/login')  # Verifica correctamente el ID de usuario
 
-    id_usuario = session['id_usuario']  # Usamos la clave correcta
+@app.route('/validar_login', methods=['POST'])
+def validar_login():
+    correo = request.form['correo']
+    password = request.form['password']
 
     conn = db_manager.obtener_conexion()
     cursor = conn.cursor(dictionary=True)
 
-    # Mostrar SOLO reservas del usuario actual
-    cursor.execute("""
-        SELECT fecha_ingreso, fecha_salida, tipo_habitacion, precio, fecha_reserva
-        FROM reservas
-        WHERE id_usuario = %s
-        ORDER BY fecha_reserva DESC
-    """, (id_usuario,))
-    
-    reservas = cursor.fetchall()
+    cursor.execute("SELECT * FROM usuarios WHERE correo = %s", (correo,))
+    usuario = cursor.fetchone()
 
     cursor.close()
     conn.close()
 
-    return render_template('ver_reservas.html', reservas=reservas)
+    if usuario and bcrypt.checkpw(password.encode('utf-8'), usuario['password'].encode('utf-8')):
+        # Guardamos los datos necesarios en sesión
+        session['correo'] = usuario['correo']
+        session['usuario'] = usuario['usuario']
+        session['rol'] = usuario['rol']
+
+        # 🔔 Enviar correo de inicio de sesión
+        try:
+            db_manager.enviar_correo_inicio_sesion(correo)
+        except Exception as e:
+            print("Error al enviar correo de inicio de sesión:", e)
+
+        # Redirigir al panel correspondiente según el rol
+        if usuario['rol'] == 'admin':
+            return redirect('/sistema_admin')
+        else:
+            return redirect('/formulario')
+    else:
+        return render_template('login.html', error='Correo o contraseña incorrectos')
+
+
 
 
 
@@ -172,20 +165,21 @@ def ver_reservas():
 def todas_reservas():
     if 'admin' not in session:
         return redirect('/login')
-    
+
     conn = db_manager.obtener_conexion()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT u.usuario AS nombre, r.fecha_ingreso, r.fecha_salida, r.tipo_habitacion, r.precio, r.fecha_reserva
+        SELECT u.usuario AS nombre, r.fecha_ingreso, r.fecha_salida, 
+               r.tipo_habitacion, r.precio, r.fecha_reserva
         FROM reservas r
-        JOIN usuarios u ON r.id_usuario = u.id
-        ORDER BY r.fecha_reserva DESC
+        JOIN usuarios u ON r.correo_usuario = u.correo
     """)
     reservas = cursor.fetchall()
-    cursor.close()
     conn.close()
+    return render_template('todas_reservas.html', reservas=reservas)
 
-    return jsonify(reservas)
+
+
 
 
 
@@ -198,6 +192,30 @@ def buscar_reservas():
     return jsonify(reservas)
 
 
+
+@app.route('/ver_reservas')
+def ver_reservas():
+    if 'correo' not in session:
+        return redirect('/login')
+
+    correo = session['correo']
+
+    conn = db_manager.obtener_conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT fecha_ingreso, fecha_salida, tipo_habitacion, precio, fecha_reserva, noches
+        FROM reservas
+        WHERE correo_usuario = %s
+        ORDER BY fecha_reserva DESC
+    """, (correo,))
+
+    reservas = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('ver_reservas.html', reservas=reservas)
 
 
 
